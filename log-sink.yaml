@@ -1,0 +1,10 @@
+- template:
+    from:
+      steps:
+      - to:
+          parameters:
+            showHeaders: '{{?showHeaders}}'
+            showStreams: '{{?showStreams}}'
+          uri: log:info
+      uri: kamelet:source
+    id: log-sink
