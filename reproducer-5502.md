@@ -138,20 +138,17 @@ Env: AMQ Streams 2.5.1, OCP 4.13
         groupsPattern: ".*"
     EOF
     ```
-#5. Once it gets running, scale it to 0 replicas
-#   ```
-#   kubectl scale kmm2 my-mirror-maker-2 -n myproject3 --replicas=0
-#   ```
 
-6. Produce 1M records to the source cluster in namespace myproject:
+
+5. Produce 1M records to the source cluster in namespace myproject:
    ```
-   kubectl exec my-cluster-kafka-0 -n myproject -ti -- bin/kafka-producer-perf-test.sh --record-size=10 --num-records 1000000 --topic my-topic --throughput -1 --producer-props bootstrap.servers=my-cluster-kafka-bootstrap:9092
+   kubectl exec my-cluster-kafka-0 -n myproject -ti -- bin/kafka-producer-perf-test.sh --record-size=10 --num-records 1000000 --topic my-topic --throughput -1 --producer-props bootstrap.servers=my-cluster-kafka-bootstrap.myproject.svc:9092
    ```
-7. Consume 500000 of them:
+6. Consume 500000 of them:
    ```
-   kubectl exec my-cluster-kafka-0 -n myproject -ti -- bin/kafka-console-consumer.sh --max-messages 500000 --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --group my-group --from-beginning
+   kubectl exec my-cluster-kafka-0 -n myproject -ti -- bin/kafka-console-consumer.sh --max-messages 500000 --bootstrap-server my-cluster-kafka-bootstrap.myproject.svc:9092 --topic my-topic --group my-group --from-beginning
    ```
-8. Verify committed offsets:
+7. Verify committed offsets:
    ```
    kubectl exec my-cluster-kafka-0 -n myproject -ti -- bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --all-groups --describe
    ```
@@ -165,11 +162,7 @@ Env: AMQ Streams 2.5.1, OCP 4.13
    GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
    my-group       my-topic        0          500000          1000000         500000          -               -               -
    ```
-#9. Scale MM2 back to 1
-#   ```
-#   kubectl scale kmm2 my-mirror-maker-2 -n myproject3 --replicas=1
-#   ```
-10. Wait some time ... and check the mirrored offset on the target cluster
+8. Wait some time ... and check the mirrored offset on the target cluster
    ```
    kubectl exec my-cluster-kafka-0 -n myproject2 -ti -- bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --all-groups --describe
    ```
