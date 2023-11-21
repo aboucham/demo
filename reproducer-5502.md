@@ -104,7 +104,7 @@ Env: AMQ Streams 2.5.1, OCP 4.13
       namespace: myproject3
     spec:
       version: 3.5.0
-      replicas: 1
+      replicas: 0
       connectCluster: "cluster-b" # Must be the target custer
       clusters:
       - alias: "cluster-a" # Source cluster
